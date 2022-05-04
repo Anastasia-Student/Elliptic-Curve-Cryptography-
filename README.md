@@ -6,4 +6,4 @@ In this lab, I implemented arithmetic on elliptic curves in projective coordinat
 - scalar product;
 - functions of transformation of a point between affine and projective coordinates.
 
-To check the execution of the program, the parameters of the elliptical R-224 were taken.
+To check the execution of the program, the parameters of the elliptical P-224 were taken.
