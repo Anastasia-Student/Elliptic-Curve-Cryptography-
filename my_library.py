@@ -96,7 +96,7 @@ class ProjectivePoint:
 
 POINT_AT_INFINITY = ProjectivePoint(0, 1, 0)
 
-def sqrt_mod(a, p): # function to find sqrt(x)modp as a, p=4k+3
+def sqrt_mod(a, p): # function to find sqrt(a)modp, p=4k+3
     k = (p - 3) >> 2
     return pow(a, k + 1, p)
 
