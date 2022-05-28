@@ -96,9 +96,52 @@ class ProjectivePoint:
 
 POINT_AT_INFINITY = ProjectivePoint(0, 1, 0)
 
-def sqrt_mod(a, p): # function to find sqrt(a)modp, p=4k+3
-    k = (p - 3) >> 2
-    return pow(a, k + 1, p)
+def IsQuadraticResidue(x, p):
+    res = pow(x, (p - 1) >> 1, p) # (p-1)>>1 the same as (p-1)//2
+    return res == 1
+
+def sqrt_mod(x, p): # function to find sqrt(x)modp as a
+    x = x % p
+    Is_Quadr_Res = IsQuadraticResidue(x, p)
+    if Is_Quadr_Res and p % 4 == 3: # if p is the Bloom number
+        return pow(x, (p + 1) >> 2, p) # we only need one root (doesn't matter which one)
+    elif Is_Quadr_Res and p % 8 == 5: # well-known case
+        xx = pow(x, (p - 1) >> 2, p) # (p-1)>>2 the same as (p - 1)//4
+        if xx == 1:
+            return pow(xx, (p + 3) >> 3, p)  # we only need one root (doesn't matter which one)
+        else:
+             return (pow(xx, (p + 3) >> 3, p) * pow(2, (p - 1) >> 2, p)) # we only need one root (doesn't matter which one)
+    else:
+        # Tonelli Shanks algorithm
+        s = 0 # we need to represent p-1 as 2^s*d; start from s=0
+        d = p - 1
+        while d & 1 == 0: # d&1 the same as d%2
+            d = d >> 1 # the same as d//2
+            s = s + 1
+        b = 2 # There is a need to find quadratic non resudue b; start from b=2
+        while IsQuadraticResidue(b, p):
+            b = b + 1
+        z = pow(b, d, p) # ord z = 2^s
+        r = s
+        a = pow(x, (d + 1) >> 1, p) # (d + 1)>>1 the same as (d + 1)//2
+        w = pow(x, d, p) # ord w | 2^(s-1)
+        # try to find min m : w^(2^m) = 1 mod p
+        while w != 1:
+            m = 0
+            e = 2
+            for m in range(1, r):
+                if pow(w, e, p) == 1:
+                    break
+                e = e << 1
+                # Hooray, we found m!
+            print("r = ", r)
+            print("m = ", m)
+            z = pow(z, 1 << (r - m - 1), p)
+            a = (a * z) % p
+            z = (z * z) % p
+            w = (w * z) % p
+            r = m
+        return a # Hooray, we found sqrt(x)modp !!!
 
 def gcdex(a, m):
     if a == 0:
